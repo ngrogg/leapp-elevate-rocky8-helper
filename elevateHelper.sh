@@ -50,6 +50,29 @@ function prepFunction(){
     "----------------------------------------------------"
 
     ## Validation
+    ### Check if user is root
+    ### Check available disk space
+
+    ## Value Confirmation
+    ## Update
+
+    ## Check for fail conditions
+    ### Check if loaded kernel is the newest kernel
+    ### Check for chattr'd files
+    ### Check for NFS
+    ### Check for Samba
+
+    ## Check for potential fail conditions
+    ### Check for /opt and /home processes
+    ### Check for packages that cause conflicts
+
+    ## Leapp test
+    #TODO: Adjustements based on test
+
+    ## Repo adjustments
+
+    ## Re-perform Leapp test
+    ### Are there still inhibitors in the logs?
 
 }
 
@@ -60,6 +83,7 @@ function upgradeFunction(){
     "----------------------------------------------------"
 
     ## Validation
+    ### Check if user is root
 
 }
 
@@ -70,6 +94,7 @@ function postFunction(){
     "----------------------------------------------------"
 
     ## Validation
+    ### Check if user is root
 
 }
 
