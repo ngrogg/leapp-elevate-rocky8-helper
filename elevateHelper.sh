@@ -82,8 +82,24 @@ function upgradeFunction(){
     "Upgrade" \
     "----------------------------------------------------"
 
+    ## Variables
+    ### Set ELevate Leapp container size, adjust as needed
+    export LEAPP_OVL_SIZE=10240
+
     ## Validation
     ### Check if user is root
+
+    ## Confirmation
+
+    ## Run upgrade function
+
+    ## If function fails check for and output errors in the logs
+
+    ## If function fails check for inhibitor messages in the logs
+
+    ## Otherwise function succeeded, prompt user that server will reboot
+
+    ## Reboot to begin upgrade
 
 }
 
