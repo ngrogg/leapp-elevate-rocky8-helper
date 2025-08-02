@@ -112,6 +112,26 @@ function postFunction(){
     ## Validation
     ### Check if user is root
 
+    ## Value Confirmation
+
+    ## Configure DNF if settings not present
+
+    ## Re-install conflicting software, expand as needed from prep step
+
+    ## Enable repos, expand as needed
+
+    ## Update server
+
+    ## Remove/re-install el8 packages not upgraded by leapp
+
+    ## List failed services (if any)
+
+    ## List remaining el8 packages to remove/re-install (if any)
+
+    ## Regenerate GRUB menu
+
+    ## Final steps, expand as needed
+
 }
 
 # Main, read passed flags
