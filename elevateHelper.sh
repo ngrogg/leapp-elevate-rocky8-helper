@@ -51,9 +51,41 @@ function prepFunction(){
 
     ## Validation
     ### Check if user is root
+    printf "%s\n" \
+    "Checking if user is root "\
+    "----------------------------------------------------" \
+    " "
+    if [[ "$EUID" -eq 0 ]]; then
+        printf "%s\n" \
+        "${green}User is root "\
+        "----------------------------------------------------" \
+        "Proceeding${normal}" \
+        " "
+    else
+        printf "%s\n" \
+        "${red}ISSUE DETECTED - User is NOT root "\
+        "----------------------------------------------------" \
+        "Re-run script as root${normal}"
+        exit 1
+    fi
+
     ### Check available disk space
 
     ## Value Confirmation
+    printf "%s\n" \
+    "${yellow}IMPORTANT: Value Confirmation" \
+    "----------------------------------------------------" \
+    "Hostname: " "$(hostname)" \
+    "Before proceeding confirm the following:" \
+    "1. In screen session" \
+    "2. Snapshots taken first" \
+    "3. Running script as root" \
+        "4. Server rebooted to ensure newest kernel in use"\
+        "5. At least 10 GB of disk space is available" \
+        " " \
+    "If all clear, press enter to proceed or ctrl-c to cancel${normal}" \
+    " "
+
     ## Update
 
     ## Check for fail conditions
@@ -88,6 +120,23 @@ function upgradeFunction(){
 
     ## Validation
     ### Check if user is root
+    printf "%s\n" \
+    "Checking if user is root "\
+    "----------------------------------------------------" \
+    " "
+    if [[ "$EUID" -eq 0 ]]; then
+        printf "%s\n" \
+        "${green}User is root "\
+        "----------------------------------------------------" \
+        "Proceeding${normal}" \
+        " "
+    else
+        printf "%s\n" \
+        "${red}ISSUE DETECTED - User is NOT root "\
+        "----------------------------------------------------" \
+        "Re-run script as root${normal}"
+        exit 1
+    fi
 
     ## Confirmation
 
@@ -111,6 +160,23 @@ function postFunction(){
 
     ## Validation
     ### Check if user is root
+    printf "%s\n" \
+    "Checking if user is root "\
+    "----------------------------------------------------" \
+    " "
+    if [[ "$EUID" -eq 0 ]]; then
+        printf "%s\n" \
+        "${green}User is root "\
+        "----------------------------------------------------" \
+        "Proceeding${normal}" \
+        " "
+    else
+        printf "%s\n" \
+        "${red}ISSUE DETECTED - User is NOT root "\
+        "----------------------------------------------------" \
+        "Re-run script as root${normal}"
+        exit 1
+    fi
 
     ## Value Confirmation
 
