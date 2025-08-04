@@ -67,7 +67,7 @@ function prepFunction(){
     ### Check for packages that cause conflicts
 
     ## Leapp test
-    #TODO: Adjustements based on test
+    #TODO: Adjustments based on test
 
     ## Repo adjustments
 
