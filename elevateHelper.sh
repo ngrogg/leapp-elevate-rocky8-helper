@@ -69,6 +69,7 @@ function prepFunction(){
         exit 1
     fi
 
+    #TODO
     ### Check available disk space
 
     ## Value Confirmation
@@ -105,12 +106,14 @@ function prepFunction(){
         "Proceeding${normal}"
     fi
 
+    #TODO
     ## Check for fail conditions
     ### Check if loaded kernel is the newest kernel
-    ### Check for chattr'd files
+    ### Check for chattr'd dnf files
     ### Check for NFS
     ### Check for Samba
 
+    #TODO
     ## Check for potential fail conditions or problem areas
     ### Check for /opt and /home processes
     ### Check for packages that cause conflicts
@@ -143,10 +146,13 @@ function prepFunction(){
     fi
 
 
+    #TODO
     ## Repo adjustments
 
     ## Re-perform Leapp test
     sudo leapp preupgrade
+
+    #TODO
     ### Are there still inhibitors in the logs?
 
 }
@@ -175,9 +181,9 @@ function upgradeFunction(){
         " "
     else
         printf "%s\n" \
-        "${red}ISSUE DETECTED - User is NOT root "\
+        "${red}ISSUE DETECTED - User is NOT root!"\
         "----------------------------------------------------" \
-        "Re-run script as root${normal}"
+        "Re-run script as root or with sudo permissions!${normal}"
         exit 1
     fi
 
@@ -202,12 +208,16 @@ function upgradeFunction(){
     ### Upgrade to Rocky 9
     leapp upgrade
 
+    #TODO
     ## If function fails check for and output errors in the logs
 
+    #TODO
     ## If function fails check for inhibitor messages in the logs
 
+    #TODO
     ## Otherwise function succeeded, prompt user that server will reboot
 
+    #TODO
     ## Reboot to begin upgrade
 
 }
@@ -318,7 +328,7 @@ function postFunction(){
 
     grub2-mkconfig -o /boot/grub2/grub.cfg
 
-
+    #TODO
     ## Final steps, expand as needed
 
 }
