@@ -179,6 +179,18 @@ function postFunction(){
     fi
 
     ## Value Confirmation
+    printf "%s\n" \
+    "${yellow}IMPORTANT: Value Confirmation" \
+    "----------------------------------------------------" \
+    "Hostname: " "$(hostname)" \
+    "Before proceeding confirm the following:" \
+    "1. In screen session" \
+    "2. Running script as root" \
+    "If all clear, press enter to proceed or ctrl-c to cancel${normal}" \
+    " "
+
+    ## Press enter to proceed, control + c to cancel
+    read junkInput
 
     ## Configure DNF if settings not present
 
@@ -191,8 +203,39 @@ function postFunction(){
     ## Remove/re-install el8 packages not upgraded by leapp
 
     ## List failed services (if any)
+    printf "%s\n" \
+    "Checking for failed services"\
+    "----------------------------------------------------" \
+    "Review any errors returned"
+    systemctl list-units --failed
+
+    printf "%s\n" \
+    "${yellow}IMPORTANT: Resolve any failed services if any"\
+    "----------------------------------------------------" \
+    "If necessary, open a new session" \
+    "Resolve any failed services if listed above" \
+    " " \
+    "Press Enter when ready to proceed${normal}"
+
+    ### Populate junk input
+    read junkInput
 
     ## List remaining el8 packages to remove/re-install (if any)
+    printf "%s\n" \
+    "Checking for Rocky 8 packages"\
+    "----------------------------------------------------" \
+    "Remove/Reinstall any packages returned"
+
+    if [[ $(yum list installed | grep el8) ]]; then
+            yum list installed | grep el8
+            printf "%s\n" \
+            "${yellow}IMPORTANT: Rocky 8 packages found"\
+            "----------------------------------------------------" \
+            "Open a separate session" \
+            "Remove/re-install packages listed above" \
+            "Press Enter when ready to proceed${normal}"
+            read junkInput
+    fi
 
     ## Regenerate GRUB menu
 
