@@ -116,7 +116,8 @@ function prepFunction(){
     #TODO
     ## Check for potential fail conditions or problem areas
     ### Check for /opt and /home processes
-    ### Check for packages that cause conflicts
+
+    ### Remove packages that caused conflicts
     #### rocky-logos causes a package conflict on upgrade
     if [[ $(dnf list installed | grep rocky-logos) ]]; then
             dnf remove rocky-logos -y
@@ -146,8 +147,7 @@ function prepFunction(){
     fi
 
 
-    #TODO
-    ## Repo adjustments
+    ## Repo adjustments, fill out as needed
 
     ## Re-perform Leapp test
     sudo leapp preupgrade
@@ -217,8 +217,8 @@ function upgradeFunction(){
     #TODO
     ## Otherwise function succeeded, prompt user that server will reboot
 
-    #TODO
     ## Reboot to begin upgrade
+    sudo reboot
 
 }
 
@@ -328,8 +328,13 @@ function postFunction(){
 
     grub2-mkconfig -o /boot/grub2/grub.cfg
 
-    #TODO
     ## Final steps, expand as needed
+    printf "%s\n" \
+    "${green}Final Steps"\
+    "----------------------------------------------------" \
+    "Upgrade complete!" \
+    " " \
+    "Fill in based on server configuration needs${normal}"
 
 }
 
