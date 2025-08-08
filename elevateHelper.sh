@@ -87,6 +87,23 @@ function prepFunction(){
     " "
 
     ## Update
+    ### Update system
+    sudo dnf update -y && sudo dnf upgrade -y && sudo dnf autoremove -y
+
+    ### If previous command fails, exit w/ error message
+    if [[ $? != 0 ]]; then
+        printf "%s\n" \
+        "${red}ISSUE DETECTED - DNF RETURNED NON-0 VALUE!" \
+        "----------------------------------------------------" \
+        "Review any errors detailed above, exiting!${normal}"
+        exit 1
+
+    else
+        printf "%s\n" \
+        "${green}Yum Updates Applied" \
+        "----------------------------------------------------" \
+        "Proceeding${normal}"
+    fi
 
     ## Check for fail conditions
     ### Check if loaded kernel is the newest kernel
@@ -94,16 +111,42 @@ function prepFunction(){
     ### Check for NFS
     ### Check for Samba
 
-    ## Check for potential fail conditions
+    ## Check for potential fail conditions or problem areas
     ### Check for /opt and /home processes
     ### Check for packages that cause conflicts
+    #### rocky-logos causes a package conflict on upgrade
+    if [[ $(dnf list installed | grep rocky-logos) ]]; then
+            dnf remove rocky-logos -y
+    fi
 
-    ## Leapp test
-    #TODO: Adjustments based on test
+    ## Install ELevate repo and leapp tool
+    sudo dnf install -y http://repo.almalinux.org/elevate/elevate-release-latest-el$(rpm --eval %rhel).noarch.rpm
+    sudo dnf install -y leapp-upgrade leapp-data-rocky
+
+    #TODO: Adjustments based on testing
+    ## Leapp tests
+    ### Populate leapp log
+    sudo leapp preupgrade
+
+    ### Remote login w/ root account
+    if [[ $(grep PermitRootLogin /etc/ssh/sshd_config) ]]; then
+            sed -i "s/PermitRootLogin\ yes/PermitRootLogin\ no/g" /etc/ssh/ssh_config
+            sudo systemctl restart sshd
+    fi
+
+    ### Firewalld AllowZoneDrifting, make adjustment if firewalld conf exists
+    if [[ -f /etc/firewalld/firewalld.conf ]]; then
+            if [[ $(grep "AllowZoneDrifting=yes" /etc/firewalld/firewalld.conf ) ]]; then
+                    sed -i "s/AllowZoneDrifting=yes/AllowZoneDrifting=no/g" /etc/firewalld/firewalld.conf
+                    firewall-cmd --reload
+            fi
+    fi
+
 
     ## Repo adjustments
 
     ## Re-perform Leapp test
+    sudo leapp preupgrade
     ### Are there still inhibitors in the logs?
 
 }
@@ -139,8 +182,25 @@ function upgradeFunction(){
     fi
 
     ## Confirmation
+    printf "%s\n" \
+    "${yellow}IMPORTANT: Value Confirmation" \
+    "----------------------------------------------------" \
+    "Hostname: " "$(hostname)" \
+    "Before proceeding confirm the following:" \
+    "1. In screen session" \
+    "2. Running script as root" \
+    " " \
+    "If all clear, press enter to proceed or ctrl-c to cancel${normal}"
+
+    ## Press enter to proceed, control + c to cancel
+    read junkInput
 
     ## Run upgrade function
+    ### Truncate upgrade log in case function has been run before
+    echo "" > /var/log/leapp/leapp-upgrade.log
+
+    ### Upgrade to Rocky 9
+    leapp upgrade
 
     ## If function fails check for and output errors in the logs
 
@@ -192,15 +252,28 @@ function postFunction(){
     ## Press enter to proceed, control + c to cancel
     read junkInput
 
-    ## Configure DNF if settings not present
+    ## Configure DNF for parallel downloads if setting not present
+    if [[ ! $(grep max_parallel_downloads /etc/dnf/dnf.conf) ]]; then
+        echo "max_parallel_downloads=10" >> /etc/dnf/dnf.conf
+    fi
 
     ## Re-install conflicting software, expand as needed from prep step
+    sudo dnf install -y \
+        rocky-logos
 
     ## Enable repos, expand as needed
 
-    ## Update server
+    ## Remove/re-install el8 packages not upgraded by leapp, expand as needed
+    sudo dnf remove -y \
+        elevate-release \
+        kernel \
+        kernel-modules \
+        leapp-data-rocky
+    sudo dnf install -y \
+        kernel
 
-    ## Remove/re-install el8 packages not upgraded by leapp
+    ## Update server
+    sudo dnf update -y && sudo dnf upgrade -y && sudo dnf autoremove -y
 
     ## List failed services (if any)
     printf "%s\n" \
@@ -238,6 +311,13 @@ function postFunction(){
     fi
 
     ## Regenerate GRUB menu
+    printf "%s\n" \
+    "Regenerating GRUB menu"\
+    "----------------------------------------------------" \
+    " "
+
+    grub2-mkconfig -o /boot/grub2/grub.cfg
+
 
     ## Final steps, expand as needed
 
