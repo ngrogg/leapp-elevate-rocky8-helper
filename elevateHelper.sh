@@ -177,7 +177,7 @@ function prepFunction(){
     ### Remove duplicate packages
     sudo package-cleanup --cleandupes -y
 
-    ### Check for NFS
+    ## Check for NFS
     printf "%s\n" \
     "Checking for NFS "\
     "----------------------------------------------------" \
@@ -185,60 +185,113 @@ function prepFunction(){
 
     ### If NFS installed and mounts are found, throw error
     if [[ $(dnf list installed | grep nfs-utils) && $(mount -l | grep nfsd) ]]; then
-            printf "%s\n" \
-            "${red}ISSUE DETECTED - NFS detected on server!"\
-            "----------------------------------------------------" \
-            "ELevate is not compatible with NFS mounts!${normal}" \
-            " " \
-            "Paths forward: " \
-            "* If possible remove packages, and disable services" \
-            "* Copy /etc/fstab and comment out mounts" \
-            "* Upgrade server and reinstall/reconfigure NFS" \
-            " " \
-            "* Otherwise provision a new server and migrate manually" \
-            " "
+        printf "%s\n" \
+        "${red}ISSUE DETECTED - NFS detected on server!"\
+        "----------------------------------------------------" \
+        "ELevate is not compatible with NFS mounts!${normal}" \
+        " " \
+        "Paths forward: " \
+        "* If possible remove packages, and disable services" \
+        "* Copy /etc/fstab, configs and comment out mounts" \
+        "* Upgrade server and reinstall/reconfigure NFS" \
+        " " \
+        "* Otherwise provision a new server and migrate manually" \
+        " "
 
-            printf "%s\n" \
-            "Below are the detected NFS packages " \
-            " "
-            dnf list installed | grep nfs-utils
+        printf "%s\n" \
+        "Below are the detected NFS packages " \
+        " "
+        dnf list installed | grep nfs-utils
 
-            printf "%s\n" \
-            "Below are the detected NFS mounts " \
-            " "
-            mount -l | grep nfsd
+        printf "%s\n" \
+        "Below are the detected NFS mounts " \
+        " "
+        mount -l | grep nfsd
 
-            exit 1
+        exit 1
 
     ### Check fstab for NFS as well
     elif [[ $(grep nfs /etc/fstab) ]]; then
-            printf "%s\n" \
-            "${red}ISSUE DETECTED - NFS detected on server!"\
-            "----------------------------------------------------" \
-            "ELevate is not compatible with NFS mounts!${normal}" \
-            " " \
-            "Paths forward: " \
-            "* If possible remove packages, and disable services" \
-            "* Copy /etc/fstab and comment out mounts" \
-            "* Upgrade server and reinstall/reconfigure NFS" \
-            " " \
-            "* Otherwise provision a new server and migrate manually" \
-            " " \
-            "The following NFS mount(s) were found in /etc/fstab:" \
-            " "
-            grep nfs /etc/fstab
+        printf "%s\n" \
+        "${red}ISSUE DETECTED - NFS detected on server!"\
+        "----------------------------------------------------" \
+        "ELevate is not compatible with NFS mounts!${normal}" \
+        " " \
+        "Paths forward: " \
+        "* If possible remove packages, and disable services" \
+        "* Copy /etc/fstab, configs and comment out mounts" \
+        "* Upgrade server and reinstall/reconfigure NFS" \
+        " " \
+        "* Otherwise provision a new server and migrate manually" \
+        " " \
+        "The following NFS mount(s) were found in /etc/fstab:" \
+        " "
+        grep nfs /etc/fstab
 
-            exit 1
+        exit 1
     ### Otherwise clear
     else
-            printf "%s\n" \
-            "${green}NFS not detected"\
-            "----------------------------------------------------" \
-            "Proceeding${normal}"
+        printf "%s\n" \
+        "${green}NFS not detected"\
+        "----------------------------------------------------" \
+        "Proceeding${normal}"
     fi
 
-    #TODO
-    ### Check for Samba
+    ## Check for Samba
+    ### If Samba installed and mounts are found, throw error
+    if [[ $(dnf list installed | grep samba-client-libs) && $(mount -l | grep -i cifs)]]; then
+        printf "%s\n" \
+        "${red}ISSUE DETECTED - Samba detected on server!"\
+        "----------------------------------------------------" \
+        "ELevate is not compatible with NFS mounts!${normal}" \
+        " " \
+        "Paths forward: " \
+        "* If possible remove packages, and disable services" \
+        "* Copy /etc/fstab, configs and comment out mounts" \
+        "* Upgrade server and reinstall/reconfigure Samba" \
+        " " \
+        "* Otherwise provision a new server and migrate manually" \
+        " "
+
+        printf "%s\n" \
+        "Below are the detected Samba packages " \
+        " "
+        dnf list installed | grep samba
+
+        printf "%s\n" \
+        "Below are the detected SMB/CIFs mounts " \
+        " "
+
+        mount -l | grep -i cifs
+
+        exit 1
+
+    ### Check fstab for CIFS as well
+    elif [[ $(grep cifs /etc/fstab) ]]; then
+        printf "%s\n" \
+        "${red}ISSUE DETECTED - Samba detected on server!"\
+        "----------------------------------------------------" \
+        "ELevate is not compatible with SMB mounts!${normal}" \
+        " " \
+        "Paths forward: " \
+        "* If possible remove packages, and disable services" \
+        "* Copy /etc/fstab, configs and comment out mounts" \
+        "* Upgrade server and reinstall/reconfigure Samba" \
+        " " \
+        "* Otherwise provision a new server and migrate manually" \
+        " " \
+        "The following SMB/CIFs mount(s) were found in /etc/fstab:" \
+        " "
+
+        grep cifs /etc/fstab
+
+        exit 1
+    else
+        printf "%s\n" \
+        "${green}Samba not detected"\
+        "----------------------------------------------------" \
+        "Proceeding${normal}"
+    fi
 
     ## Check for potential fail conditions or problem areas
     ### Check for /opt and /home processes
