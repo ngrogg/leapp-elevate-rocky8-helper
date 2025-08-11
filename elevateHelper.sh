@@ -126,6 +126,11 @@ function prepFunction(){
         "Proceeding${normal}"
     fi
 
+    ### Install required packages
+    #### yum-utils for package-cleanup command
+    sudo dnf install -y \
+        yum-utils
+
     #TODO
     ## Check for fail conditions
     ### Check if loaded kernel is the newest kernel
@@ -154,7 +159,25 @@ function prepFunction(){
     fi
 
     ### Check for chattr'd dnf files
+    if [[ $(lsattr /etc/dnf/dnf.conf | grep "\-i\-") || $(lsattr /etc/yum.repos.d/* | grep "\-i\-") ]]; then
+        printf "%s\n" \
+        "${red}ISSUE DETECTED - chattrd dnf files found!" \
+        "----------------------------------------------------" \
+        "Review and unchattr the files listed below" \
+        "Re-run script once review complete!${normal}"
+        lsattr /etc/yum.conf | grep "\-i\-"
+        lsattr /etc/yum.repos.d/* | grep "\-i\-"
+        exit 1
+    else
+        printf "%s\n" \
+        "${green}No Chattrd yum files found" \
+        "----------------------------------------------------" \
+        "Proceeding${normal}"
+    fi
+
     ### Remove duplicate packages
+    sudo package-cleanup --cleandupes -y
+
     ### Check for NFS
     ### Check for Samba
 
@@ -168,6 +191,11 @@ function prepFunction(){
             dnf remove rocky-logos -y
     fi
 
+    #### bash-completion causes a package conflig on upgade
+    if [[ $(dnf list installed | grep bash-completion) ]]; then
+            dnf remove bash-completion -y
+    fi
+
     ## Install ELevate repo and leapp tool
     sudo dnf install -y http://repo.almalinux.org/elevate/elevate-release-latest-el$(rpm --eval %rhel).noarch.rpm
     sudo dnf install -y leapp-upgrade leapp-data-rocky
@@ -179,7 +207,7 @@ function prepFunction(){
 
     ### Remote login w/ root account
     if [[ $(grep PermitRootLogin /etc/ssh/sshd_config) ]]; then
-            sed -i "s/PermitRootLogin\ yes/PermitRootLogin\ no/g" /etc/ssh/ssh_config
+            sed -i "s/PermitRootLogin\ yes/PermitRootLogin\ no/g" /etc/ssh/sshd_config
             sudo systemctl restart sshd
     fi
 
