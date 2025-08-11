@@ -205,7 +205,7 @@ function prepFunction(){
 
         printf "%s\n" \
         " " \
-        "${yellow}Press Enter when ready to proceed${normal}" \
+        "${yellow}IMPORTANT: Press Enter when ready to proceed${normal}" \
         " "
         read junkInput
     else
