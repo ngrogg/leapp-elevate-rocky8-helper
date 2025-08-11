@@ -131,7 +131,6 @@ function prepFunction(){
     sudo dnf install -y \
         yum-utils
 
-    #TODO
     ## Check for fail conditions
     ### Check if loaded kernel is the newest kernel
     printf "%s\n" \
@@ -178,12 +177,44 @@ function prepFunction(){
     ### Remove duplicate packages
     sudo package-cleanup --cleandupes -y
 
+    #TODO
     ### Check for NFS
-    ### Check for Samba
 
     #TODO
+    ### Check for Samba
+
     ## Check for potential fail conditions or problem areas
     ### Check for /opt and /home processes
+    printf "%s\n" \
+    "Checking for /opt and /home processes" \
+    "----------------------------------------------------" \
+    " "
+
+    ### Check for processes in /opt and /home folders. Update grep filter as needed
+    if [[ $(ps aux | grep -i -E "/opt|/home" | grep -v -i "grep") ]]; then
+        printf "%s\n" \
+        "${yellow}IMPORTANT: /opt or /home processes found "\
+        "----------------------------------------------------" \
+        "These may be important non-standard processes" \
+        " " \
+        "Note the following processes below${normal}" \
+        " "
+
+        #### List processes running out of /home or /opt. Update grep filter as needed as needed
+        ps aux | grep -i -E "/opt|/home" | grep -v -i "grep"
+
+        printf "%s\n" \
+        " " \
+        "${yellow}Press Enter when ready to proceed${normal}" \
+        " "
+        read junkInput
+    else
+        printf "%s\n" \
+        "${green}No /opt or /home processes found "\
+        "----------------------------------------------------" \
+        "Proceeding${normal}" \
+        " "
+    fi
 
     ### Remove packages that caused conflicts
     #### rocky-logos causes a package conflict on upgrade
@@ -200,7 +231,6 @@ function prepFunction(){
     sudo dnf install -y http://repo.almalinux.org/elevate/elevate-release-latest-el$(rpm --eval %rhel).noarch.rpm
     sudo dnf install -y leapp-upgrade leapp-data-rocky
 
-    #TODO: Adjustments based on testing
     ## Leapp tests
     ### Populate leapp log
     sudo leapp preupgrade
@@ -221,13 +251,41 @@ function prepFunction(){
 
 
     ## Repo adjustments, fill out as needed
+    ### Adjusted EPEL to Rocky 9
+    if [[ $(grep "enabled=1" /etc/yum.repos.d/epel.repo) ]]; then
+            #### Update repo name
+            sed -i "s/Linux\ 8/Linux\ 9/g" /etc/yum.repos.d/epel.repo
+            #### Update repo URL
+            sed -i "s/epel\/8/epel\/9/g" /etc/yum.repos.d/epel.repo
+            #### Disable GPG check, needed for upgrade
+            sed -i "s/gpgcheck=1/gpgcheck=0/g" /etc/yum.repos.d/epel.repo
+    fi
 
     ## Re-perform Leapp test
     sudo leapp preupgrade
 
-    #TODO
-    ### Are there still inhibitors in the logs?
+    ## Are there still inhibitors in the logs?
+    if [[ $(grep inhibitor /var/log/leapp/leapp-report.txt -l) ]]; then
+        printf "%s\n" \
+        "${red}ISSUE DETECTED - Inhibitor level errors found "\
+        "----------------------------------------------------" \
+        "Review/resolve manually " \
+        "See /var/log/leapp/leapp-report.txt " \
+        "Run sudo leapp preupgrade when complete to re-check " \
+        "Snippet of errors below for review${normal}"
+        grep inhibitor /var/log/leapp/leapp-report.txt -C 5
 
+        printf "%s\n" \
+        "${red}Once review complete run: leapp preupgrade"\
+        "If clear, run script with upgrade flags${normal}"
+
+    #### Else no critical errors found, tell use to run upgrade function
+    else
+        printf "%s\n" \
+        "${green}No Inhibitor level errors found "\
+        "----------------------------------------------------" \
+        "Re-run script with upgrade flags${normal}"
+    fi
 }
 
 # Function to
@@ -342,16 +400,31 @@ function postFunction(){
 
     ## Re-install conflicting software, expand as needed from prep step
     sudo dnf install -y \
-        rocky-logos
+        rocky-logos \
+        bash-completion
 
-    ## Enable repos, expand as needed
+    ## Re-install repos, expand as needed
+    #### Re-install EPEL
+    if [[ $(grep "enabled=1" /etc/yum.repos.d/epel.repo) ]]; then
+            ##### Remove EL8 version
+            sudo dnf remove epel-release -y
+
+            ##### Enable CodeReady Build Repo, replacement for PowerTools in RL9?
+            sudo dnf config-manager --set-enabled crb
+
+            ##### Install Rocky Linux 9 EPEL
+            sudo dnf install https://dl.fedoraproject.org/pub/epel/epel-release-latest-9.noarch.rpm -y
+    fi
 
     ## Remove/re-install el8 packages not upgraded by leapp, expand as needed
+    ### Remove statement
     sudo dnf remove -y \
         elevate-release \
         kernel \
         kernel-modules \
         leapp-data-rocky
+
+    ### Re-install statement
     sudo dnf install -y \
         kernel
 
