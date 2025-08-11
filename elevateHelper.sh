@@ -179,6 +179,64 @@ function prepFunction(){
 
     #TODO
     ### Check for NFS
+    printf "%s\n" \
+    "Checking for NFS "\
+    "----------------------------------------------------" \
+    " "
+
+    ### If NFS installed and mounts are found, throw error
+    if [[ $(dnf list installed | grep nfs-utils) && $(mount -l | grep nfsd) ]]; then
+            printf "%s\n" \
+            "${red}ISSUE DETECTED - NFS detected on server!"\
+            "----------------------------------------------------" \
+            "ELevate is not compatible with NFS mounts!${normal}" \
+            " " \
+            "Paths forward: " \
+            "* If possible remove packages, and disable services" \
+            "* Copy /etc/fstab and comment out mounts" \
+            "* Upgrade server and reinstall/reconfigure NFS" \
+            " " \
+            "* Otherwise provision a new server and migrate manually" \
+            " "
+
+            printf "%s\n" \
+            "Below are the detected NFS packages " \
+            " "
+            dnf list installed | grep nfs-utils
+
+            printf "%s\n" \
+            "Below are the detected NFS mounts " \
+            " "
+            mount -l | grep nfsd
+
+            exit 1
+
+    ### Check fstab for NFS as well
+    elif [[ $(grep nfs /etc/fstab) ]]; then
+            printf "%s\n" \
+            "${red}ISSUE DETECTED - NFS detected on server!"\
+            "----------------------------------------------------" \
+            "ELevate is not compatible with NFS mounts!${normal}" \
+            " " \
+            "Paths forward: " \
+            "* If possible remove packages, and disable services" \
+            "* Copy /etc/fstab and comment out mounts" \
+            "* Upgrade server and reinstall/reconfigure NFS" \
+            " " \
+            "* Otherwise provision a new server and migrate manually" \
+            " " \
+            "The following NFS mount(s) were found in /etc/fstab:" \
+            " "
+            grep nfs /etc/fstab
+
+            exit 1
+    ### Otherwise clear
+    else
+            printf "%s\n" \
+            "${green}NFS not detected"\
+            "----------------------------------------------------" \
+            "Proceeding${normal}"
+    fi
 
     #TODO
     ### Check for Samba
