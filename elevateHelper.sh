@@ -339,14 +339,64 @@ function upgradeFunction(){
     ### Upgrade to Rocky 9
     leapp upgrade
 
-    #TODO
     ## If function fails check for and output errors in the logs
+    if [[ $(grep "Error Summary" /var/log/leapp/leapp-upgrade.log) || $(grep "ERRORS" /var/log/leapp/leapp-upgrade.log | grep -v '/') ]]; then
+        #### Message that errors were found in the log
+        printf "%s\n" \
+        "${red}ISSUE DETECTED - Error in leapp-upgrade.log" \
+        "----------------------------------------------------" \
+        "Review /var/log/leapp/leapp-upgrade.log" \
+        "Snippet of error listed below" \
+        "After resolving re-run script with upgrade function${normal}" \
+        " "
 
-    #TODO
+        #### Output error messages
+        grep -E "Error Summary|ERRORS" /var/log/leapp/leapp-upgrade.log -C 7
+
+        #### Error message for disk space
+        printf "%s\n" \
+        " " \
+        "${red}IMPORTANT" \
+        "----------------------------------------------------" \
+        "If error related to X MB needed on / filesystem" \
+        "Run the following: export 'LEAPP_OVL_SIZE=11264'" \
+        "Then upgrade manually: 'leapp upgrade'" \
+        "If check clears, reboot to complete upgrade" \
+        "If error persists, re-run export with larger value for LEAPP_OVL_SIZE"\
+        "Be aware of available disk space before doing this!${normal}"
+
+        exit 1
+    fi
+
     ## If function fails check for inhibitor messages in the logs
+    if [[ $(grep inhibitor /var/log/leapp/leapp-report.txt -l) ]]; then
+        printf "%s\n" \
+        "${red}ISSUE DETECTED - Inhibitor level errors found "\
+        "----------------------------------------------------" \
+        "Review/resolve manually " \
+        "See /var/log/leapp/leapp-report.txt " \
+        "Run 'sudo leapp preupgrade' when complete to re-check " \
+        "Snippet of errors below for review${normal}" \
+        " "
 
-    #TODO
+        grep inhibitor /var/log/leapp/leapp-report.txt -C 5
+
+        printf "%s\n" \
+        "${red}Once review complete run 'leapp preupgrade'"\
+        "If clear, run script with upgrade flags${normal}"
+
+        exit 1
+    fi
+
     ## Otherwise function succeeded, prompt user that server will reboot
+    printf "%s\n" \
+    "${yellow}IMPORTANT: Upgrade checks complete" \
+    "----------------------------------------------------" \
+    "Server ready to upgrade" \
+    " " \
+    "Press Enter to begin upgrade${normal}"
+
+    read junkInput
 
     ## Reboot to begin upgrade
     sudo reboot
