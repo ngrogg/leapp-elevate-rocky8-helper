@@ -19,6 +19,6 @@ Take a snapshot before using! No warranties, ymmv. <br>
 ## Script
 To copy just the script onto a server: <br>
 Production version: <br>
-`wget https://raw.githubusercontent.com/ngrogg/leapp-elevate-rocky8-helper/refs/heads/main/elevateHelper.sh`
+`wget https://raw.githubusercontent.com/ngrogg/leapp-elevate-rocky8-helper/refs/heads/main/elevateHelper.sh` <br> <br>
 Testing version (not recommended): <br>
 `wget https://raw.githubusercontent.com/ngrogg/leapp-elevate-rocky8-helper/refs/heads/testing/elevateHelper.sh`
