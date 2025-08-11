@@ -177,7 +177,6 @@ function prepFunction(){
     ### Remove duplicate packages
     sudo package-cleanup --cleandupes -y
 
-    #TODO
     ### Check for NFS
     printf "%s\n" \
     "Checking for NFS "\
