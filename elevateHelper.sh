@@ -239,7 +239,7 @@ function prepFunction(){
 
     ## Check for Samba
     ### If Samba installed and mounts are found, throw error
-    if [[ $(dnf list installed | grep samba-client-libs) && $(mount -l | grep -i cifs)]]; then
+    if [[ $(dnf list installed | grep samba-client-libs) && $(mount -l | grep -i cifs) ]]; then
         printf "%s\n" \
         "${red}ISSUE DETECTED - Samba detected on server!"\
         "----------------------------------------------------" \
