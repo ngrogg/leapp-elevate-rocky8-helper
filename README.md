@@ -1,5 +1,11 @@
 # Leapp Elevate Rocky 8 Helper - Version r82r9
 
+## Disclaimer
+As of `12-18-2025` Rocky Linux is no longer supported by ELevate as confirmed in their FAQ [here](https://almalinux.org/elevate/). <br>
+This is also covered in a blog post linked [here](https://almalinux.org/blog/2025-12-18-elevate-updates/).
+
+This script will be tested and refactored in the coming weeks to upgrade from Rocky Linux 8 to Alma Linux 9.
+
 ## Overview
 Boilerplate BASH wrapper script for upgrading Rocky Linux 8 to Rocky Linux 9 via Leapp ELevate. <br>
 
@@ -11,12 +17,6 @@ Alma Linux ELevate documentation can be found [here](https://almalinux.org/eleva
 This script should be considered the _basis_ for it's own work effort and not a complete script in and of itself. <br>
 It may be possible to run the script as is and successfully upgrade a server to Rocky 9, but there will likely need to be additional adjustments. <br>
 Take a snapshot before using! No warranties, ymmv. <br>
-
-## Disclaimer
-As of `12-18-2025` Rocky Linux is no longer supported by ELevate as confirmed in their FAQ [here](https://almalinux.org/elevate/). <br>
-This is also covered in a blog post linked [here](https://almalinux.org/blog/2025-12-18-elevate-updates/).
-
-This script will be tested and refactored in the coming weeks to upgrade from Rocky Linux 8 to Alma Linux 9.
 
 ## Usage
 * **elevateHelper.sh**, a BASH script for upgrading Rocky Linux 8 servers to Rocky Linux 9.
